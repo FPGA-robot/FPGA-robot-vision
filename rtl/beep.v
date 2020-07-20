@@ -8,14 +8,14 @@ module beep(
 	input clk; //系统时钟50MHz
 	input rst_n;//系统复位信号
 	output beep_pin; //蜂鸣器的引脚
-	input key; //按键或者一个少于1秒的高电平脉冲
+	input [7:0] key; //按键或者一个少于1秒的高电平脉冲
 	
 	wire clk;
 	wire rst_n;//系统复位信号
 	wire beep_pin;
 	wire second_out;
 	
-	wire key; //按键或者一个少于1秒的高电平脉冲
+	wire [7:0] key; //按键或者一个少于1秒的高电平脉冲
 	
 	//驱动蜂鸣器发声
 	beep__	beep__(
@@ -44,11 +44,12 @@ module time1s(
 	
 	input clk; //系统时钟50MHz
 	input rst_n;//系统复位信号
-	input en_in;
+	input [7:0] en_in;
 	
 	output second_out;
 	
-	wire clk,rst_n,en_in;
+	wire clk,rst_n;
+	wire [7:0]en_in;
 	reg second_out;
 	
 	reg [27:0] cont;
@@ -64,7 +65,8 @@ module time1s(
 				cont <= 0;
 				second_out <= 0;
 			end
-			else if(en_in == 1 || second_out == 1)begin
+			else if(en_in == 8'd1 || en_in == 8'd2 || en_in == 8'd3 || en_in == 8'd4 || en_in == 8'd5 || en_in == 8'd6 || 
+					  en_in == 8'd7 || en_in == 8'd8 || en_in == 8'd9 ||second_out == 1)begin //一旦检测到有信号就开启蜂鸣器
 				second_out <= 1;
 				cont <= cont + 1'b1;
 			end

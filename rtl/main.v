@@ -22,7 +22,7 @@ module main(
 	input [1:0] choose_data_length;
 	input [7:0] target_data;
 	output [11:0] conter_data;
-	output Data_received; //串口的数输出 不会直接输出数据，会输出标志
+	output [7:0] Data_received; //串口的数输出 不会直接输出数据，会输出标志
 	
 	wire clk; //系统时钟 板载50MHz晶振
 	wire rst_n; //系统复位信号
@@ -49,7 +49,7 @@ module main(
 
 	reg [4:0]flag_work; //状态机的循环寄存器
 	
-	reg Data_received;//串口的数输出
+	reg [7:0] Data_received;//串口的数输出
 	reg [3:0] Data_received_sign; //串口获取的状态机标志
 	
 	reg [26:0] conter; //101 1111 0101 1110 0001 0000 0000 //用来延时
@@ -493,11 +493,23 @@ module main(
 					4'd6 : begin if(data == 8'h2C) Data_received_sign <= 4'd7; else Data_received_sign <= 4'd0; end
 					4'd7 : begin if(data == 8'h31) Data_received_sign <= 4'd8; else Data_received_sign <= 4'd0; end
 					4'd8 : begin if(data == 8'h3A) Data_received_sign <= 4'd9; else Data_received_sign <= 4'd0; end
-					4'd9 : begin if(data == 8'h31) begin Data_received_sign <= 4'd10; Data_received <= 1; end else Data_received_sign <= 4'd0; 
-									 if(data == 8'h32) begin Data_received_sign <= 4'd10; Data_received <= 1; end else Data_received_sign <= 4'd0; 
-									 if(data == 8'h33) begin Data_received_sign <= 4'd10; Data_received <= 1; end else Data_received_sign <= 4'd0; 
-									 if(data == 8'h34) begin Data_received_sign <= 4'd10; Data_received <= 1; end else Data_received_sign <= 4'd0; 
-									 if(data == 8'h35) begin Data_received_sign <= 4'd10; Data_received <= 1; end else Data_received_sign <= 4'd0; 
+					4'd9 : begin if(data == 8'h31) begin Data_received_sign <= 4'd10; Data_received <= 8'd1; end else Data_received_sign <= 4'd0; //1
+									 if(data == 8'h32) begin Data_received_sign <= 4'd10; Data_received <= 8'd2; end else Data_received_sign <= 4'd0; //2
+									 if(data == 8'h33) begin Data_received_sign <= 4'd10; Data_received <= 8'd3; end else Data_received_sign <= 4'd0; //3
+									 if(data == 8'h34) begin Data_received_sign <= 4'd10; Data_received <= 8'd4; end else Data_received_sign <= 4'd0; //4
+									 if(data == 8'h35) begin Data_received_sign <= 4'd10; Data_received <= 8'd5; end else Data_received_sign <= 4'd0; //5
+									 if(data == 8'h36) begin Data_received_sign <= 4'd10; Data_received <= 8'd6; end else Data_received_sign <= 4'd0; //6
+									 if(data == 8'h37) begin Data_received_sign <= 4'd10; Data_received <= 8'd7; end else Data_received_sign <= 4'd0; //7
+									 if(data == 8'h38) begin Data_received_sign <= 4'd10; Data_received <= 8'd8; end else Data_received_sign <= 4'd0; //8
+									 if(data == 8'h39) begin Data_received_sign <= 4'd10; Data_received <= 8'd9; end else Data_received_sign <= 4'd0; //9
+									 if(data == 8'h30) begin Data_received_sign <= 4'd10; Data_received <= 8'd0; end else Data_received_sign <= 4'd0; //0
+									 
+									 if(data == 8'h61) begin Data_received_sign <= 4'd10; Data_received <= 8'd10; end else Data_received_sign <= 4'd0; //a
+									 if(data == 8'h62) begin Data_received_sign <= 4'd10; Data_received <= 8'd11; end else Data_received_sign <= 4'd0; //b
+									 if(data == 8'h63) begin Data_received_sign <= 4'd10; Data_received <= 8'd12; end else Data_received_sign <= 4'd0; //c
+									 if(data == 8'h64) begin Data_received_sign <= 4'd10; Data_received <= 8'd13; end else Data_received_sign <= 4'd0; //d
+									 if(data == 8'h65) begin Data_received_sign <= 4'd10; Data_received <= 8'd14; end else Data_received_sign <= 4'd0; //e
+									 if(data == 8'h66) begin Data_received_sign <= 4'd10; Data_received <= 8'd15; end else Data_received_sign <= 4'd0; //f
 							 end
 					default : begin Data_received <= 0; Data_received_sign <= 4'd0;  end
 				endcase

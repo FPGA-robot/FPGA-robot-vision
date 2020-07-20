@@ -1,5 +1,3 @@
-
-
 module i2c_dri
     #(// slave address（器件地址），放此处方便参数传递
       parameter   SLAVE_ADDR =  7'b1010000   ,
@@ -60,6 +58,7 @@ wire   [8:0]  clk_divide  ;                      // 模块驱动时钟的分频�
 assign  sda     = sda_dir ?  sda_out : 1'bz;     // SDA数据输出或高阻
 assign  sda_in  = sda ;                          // SDA数据输入
 assign  clk_divide = (CLK_FREQ/I2C_FREQ) >> 2'd3;// 模块驱动时钟的分频系数
+
 
 //生成I2C的SCL的四倍频率的驱动时钟用于驱动i2c的操作
 always @(posedge clk or negedge rst_n) begin

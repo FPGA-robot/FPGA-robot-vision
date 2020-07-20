@@ -12,7 +12,12 @@ module TopDesign(
 						
 						pwm, //PWM输出IO
 						pwm1, //PWM输出IO
-						pwm2 //PWM输出IO
+						pwm2, //PWM输出IO
+						pwm3, //PWM输出IO
+						m1a,
+						m1b,
+						m2a,
+						m2b
 						);
 
 	//输入输出定义
@@ -33,13 +38,22 @@ module TopDesign(
 	output pwm; //PWM输出IO
 	output pwm1; //PWM输出IO
 	output pwm2; //PWM输出IO
+	output pwm3; //PWM输出IO
+	
+	output m1a;
+	output m1b;
+	output m2a;
+	output m2b;
 	
 	wire clk;
 	wire rst_n;
+	
 	wire TX;
 	wire tx2;
 	wire RX;
+	
 	wire [3:0]led;
+	
 	wire [11:0] conter_data;      //三种模式下输出不同的数据，第一种模式输出0至256 第二种模式输出0至1M 第三种是2M
 	wire tx_down;          //串口发送完成一个字节的高电平脉冲
 	reg[7:0] target_data; //串口要发送的实际数据
@@ -62,19 +76,31 @@ module TopDesign(
 	wire [7:0] humidity_data_ASCII_4;
 	wire [7:0] humidity_data_ASCII_5;
 	 
-	wire key_value; //从ESP8266串口接收到的值
+	wire [7:0] key_value; //从ESP8266串口接收到的值
 	wire beep_pin;//蜂鸣器的引脚
 	
 	wire pwm;
 	wire pwm1;
 	wire pwm2;
+	wire pwm3;
 	
-	time_delay_2s time_delay_2s(
-							.clk(clk),
-							.rstn(rst_n),
-							.sign()
-							);
+	wire m1a;
+	wire m1b;
+	wire m2a;
+	wire m2b;
 	
+	//控制底盘的两个电机
+	motor motor(
+					.clk(clk), //系统时钟50MHz
+					.rst_n(rst_n), //系统复位信号
+					.m1a(m1a), //电机1
+					.m1b(m1b), //电机1
+					.m2a(m2a), //电机2
+					.m2b(m2b), //电机2
+					.motor_setting(key_value) //电机状态设置
+				);
+				
+	//主要模块，串口控制ESP8266部分
 	main main(
 				.clk(clk),
 				.rst_n(rst_n),
@@ -89,6 +115,7 @@ module TopDesign(
 				.Data_received(key_value) //串口的数输出
 				);	
 	
+	//蜂鸣器设计
 	beep	beep(
 					.clk(clk), //系统时钟50MHz
 					.rst_n(rst_n), //系统复位信号
@@ -96,6 +123,7 @@ module TopDesign(
 					.key(key_value) //按键或者一个少于1秒的高电平脉冲
 				);
 	
+	//控制四个舵机
 	engine engine(
 						.clk(clk), //系统时钟50MHz
 						.rst_n(rst_n), //系统复位信号
@@ -103,11 +131,12 @@ module TopDesign(
 						.pwm(pwm), //PWM输出IO
 						.pwm1(pwm1), //PWM输出IO
 						.pwm2(pwm2), //PWM输出IO
+						.pwm3(pwm3), //PWM输出IO
 						
-						.key1(key_value),
-						.key2()
+						.key(key_value)
 					); 
-				
+	
+	//控制温湿度传感器模块
 	dht11_drive dht11_drive(
 									.sys_clk(clk),   //系统时钟
 									.rst_n(rst_n),   //系统复位             
@@ -115,6 +144,7 @@ module TopDesign(
 									.data_valid(data_valid)     //有效输出数据
 									);  
 	
+	//控制温湿度传感器输出转换好的数据
 	dht11_key   dht11_key(
 									.sys_clk(clk),
 									.sys_rst_n(rst_n),
@@ -135,8 +165,9 @@ module TopDesign(
 									.humidity_data_ASCII_4(humidity_data_ASCII_4),
 									.humidity_data_ASCII_5(humidity_data_ASCII_5),
 									.sign(),
-									.point(),
-								);								
+									.point()
+								);		
+	//控制检测模拟量						
 	adda_top adda_top(   
 								.sys_clk(clk)    ,    // 系统时钟
 								.sys_rst_n(rst_n)  ,    // 系统复位

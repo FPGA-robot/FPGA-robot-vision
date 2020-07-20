@@ -1,4 +1,3 @@
-
 module dht11_key(
 						sys_clk,
 						sys_rst_n,
@@ -23,7 +22,7 @@ module dht11_key(
 						humidity_data_ASCII_5,
 						sign,
 						//en,
-						point,
+						point
 					);
 
 	input             sys_clk;
@@ -116,14 +115,7 @@ wire   [3:0]              humidity_data5    ;        // 十万位数
 
 //小数点左移两位
 assign point = 6'b000100;
-/*//检测到按键按下时，切换温/湿度标志信号
-always @ (posedge sys_clk or negedge sys_rst_n) begin 
-    if(!sys_rst_n)                                    
-        flag <= 1'b0;
-    else if (key_flag & (~key_value))
-        flag <= ~flag;
-end 
-*/
+
 
 //flag为“0”时显示温度，为“1”时显示湿度
 always @ (posedge sys_clk or negedge sys_rst_n) begin
@@ -167,7 +159,7 @@ assign  humidity_data3 = data_humidity / 10'd1000 % 4'd10 ;   // 千位数
 assign  humidity_data4 = data_humidity / 14'd10000 % 4'd10;   // 万位数
 assign  humidity_data5 = data_humidity / 17'd100000;          // 十万位数
 
-//将20位2进制数转换 ASCII
+//查找表 将20位2进制数转换 ASCII
 always @ (posedge sys_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin 
 		data_ASCII_0 <= 8'd0; // 个位数

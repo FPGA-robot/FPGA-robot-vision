@@ -1,8 +1,8 @@
 module engine_driver(
-								clk,
-								rst_n,
-								angle_setting,
-								pwm
+								clk, //系统时钟50MHz
+								rst_n, //系统复位信号
+								angle_setting,	//输入角度控制参数
+								pwm	//输出PWM信号
 						   ); 
 	
 	input clk;
@@ -12,7 +12,7 @@ module engine_driver(
 	
 	wire clk;
 	wire rst_n;
-	wire [7:0] angle_setting; //1011 0100 180度
+	wire [7:0] angle_setting; //1011 0100 最大180度
 	
 	reg pwm; 
 	reg	[31:0]	cnt_r;	
@@ -26,7 +26,7 @@ module engine_driver(
 						s4=25_000;//0
 					
 	
-	
+	//将输入的角度控制参数转换成可以直接用来产生定时信号
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)
 			cnt_r <= s4;
@@ -36,6 +36,7 @@ module engine_driver(
 			cnt_r <= 0;
 	end
 
+	//根据定时器产生输出的PWM信号
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)
 			pwm <= 1'b0;
@@ -45,6 +46,7 @@ module engine_driver(
 			pwm <= 1'b0;
 	end
 	
+	//定时器，产生PWM信号
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)
 			cnt <= 31'd0;
